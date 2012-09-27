@@ -65,4 +65,26 @@ public class URLUtils {
 			}
 		}
 	}
+	
+	/**
+	 * Method writes the InputStream to the given file.
+	 * @param inputStream InputStream to be written.
+	 * @param outputFile Destination File. 
+	 * @throws IOException
+	 */
+	public static void DownloadStream(InputStream inputStream, String outputFile) throws IOException {
+		OutputStream outputStream = new FileOutputStream(outputFile);
+		DownloadStream(inputStream, outputStream);
+	}
+	
+	/**
+	 * Method writes the InputStream to the given file.
+	 * @param inputStream InputStream to be written.
+	 * @param outputDirectory Destination Folder.
+	 * @param outputFileName Destination file name.
+	 * @throws IOException
+	 */
+	public static void DownloadStream(InputStream inputStream, String outputDirectory, String outputFileName) throws IOException {
+		DownloadStream(inputStream, outputDirectory+"/"+outputFileName);
+	}
 }
