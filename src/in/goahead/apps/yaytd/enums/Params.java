@@ -17,35 +17,19 @@
     along with Youtube Downloader (yaytd).
     If not, see <http://www.gnu.org/licenses/>.
  */
+package in.goahead.apps.yaytd.enums;
 
-package in.goahead.apps.yaytd;
-
-import in.goahead.apps.yaytd.log.AppLogger;
-import in.goahead.apps.yaytd.util.URLEncodeDecode;
-import in.goahead.apps.yaytd.util.URLUtils;
-import in.goahead.apps.yaytd.util.VideoInfoParser;
-
-import java.net.URI;
-
-public class Main {
-	
-	private static AppLogger Logger = AppLogger.getLogger(Main.class);
-
-	/**
-	 * Main method to start the job.
-	 * @param args csv file containing the list of comma separated
-	 *  video id and download quality. 
-	 */
-	public static void main(String[] args) {
+public enum Params {
+	NULL,status,errorcode,reason,video_id,fmt_list,title,url_encoded_fmt_stream_map;
+	public static Params ValuOf(String params) {
+		Params p = NULL;
+		
 		try {
-			java.io.FileInputStream f = new java.io.FileInputStream("D:/Work/yaytd/get_video_info_1080");
-			Logger.debug(VideoInfoParser.parseInfoFile(URLUtils.InputStreamToString(f), "MP4","H"));
+			p = valueOf(params);
 		}
-		catch (Exception e) {
-			e.printStackTrace();
+		catch(IllegalArgumentException iae) {
+			p = NULL;
 		}
-		finally {
-			
-		}
+		return p;
 	}
 }

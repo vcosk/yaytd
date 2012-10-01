@@ -19,9 +19,55 @@
  */
 
 package in.goahead.apps.yaytd.log;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AppLogger {
-	public static void log(Object obj) {
+
+	private static Map<String, AppLogger> LoggerMap = new HashMap<String, AppLogger>();
+	
+	@SuppressWarnings("rawtypes")
+	public static AppLogger getLogger(Class className) {
+		
+		AppLogger retLogger = null;
+		
+		if(LoggerMap.containsKey(className.toString())) {
+			retLogger = LoggerMap.get(className.toString());
+		}
+		else {
+			retLogger = new AppLogger();
+			LoggerMap.put(className.toString(), retLogger);
+		}
+		return retLogger;
+	}
+	
+	
+	public void fatal(Object obj) {
+		this.log(obj);
+	}
+	
+	public void error(Object obj) {
+		this.log(obj);
+	}
+	
+	public void warn(Object obj) {
+		this.log(obj);
+	}
+	
+	public void info(Object obj) {
+		this.log(obj);
+	}
+	
+	public void debug(Object obj) {
+		this.log(obj);
+	}
+	
+	public void trace(Object obj) {
+		this.log(obj);
+	}
+	
+	private void log(Object obj) {
 		System.out.println(obj);
 	}
+	
 }

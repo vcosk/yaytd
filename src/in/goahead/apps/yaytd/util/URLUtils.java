@@ -20,9 +20,15 @@
 
 package in.goahead.apps.yaytd.util;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.Proxy;
+import java.net.URL;
+import java.net.URLConnection;
 
 /**
  * Class contains utility methods wrt., URL and corresponding stream handling.
@@ -86,5 +92,40 @@ public class URLUtils {
 	 */
 	public static void DownloadStream(InputStream inputStream, String outputDirectory, String outputFileName) throws IOException {
 		DownloadStream(inputStream, outputDirectory+"/"+outputFileName);
+	}
+	
+	public static InputStream OpenURL(String url) throws MalformedURLException, IOException {
+		InputStream is = null;
+		
+		Proxy proxy = getProxy();
+		
+		URL urlObj = new URL(url);
+		URLConnection connection = null;
+		if(proxy == null) {
+			connection = urlObj.openConnection();
+		}
+		else {
+			connection = urlObj.openConnection(proxy);
+		}
+		is = connection.getInputStream();		
+		return is;
+	}
+	
+	public static Proxy getProxy() {
+		Proxy proxy = null;
+		String proxyType = System.getProperty("YAYTD.PROXY_TYPE");
+		String proxyServer = System.getProperty("YAYTD.PROXY_SERVER");
+		String proxyPort = System.getProperty("YAYTD.PROXY_PORT");
+		
+		try {
+		if(proxyType != null && proxyServer != null && proxyPort != null) {
+			proxy = new Proxy(Proxy.Type.valueOf(proxyType), new InetSocketAddress(proxyServer, Integer.parseInt(proxyPort)));
+		}
+		}
+		catch(IllegalArgumentException ile) {
+			ile.printStackTrace();
+		}
+		
+		return proxy;
 	}
 }

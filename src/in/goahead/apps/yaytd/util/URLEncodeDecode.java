@@ -275,4 +275,20 @@ public class URLEncodeDecode {
 		
 		return decodedString==null?null:decodedString.toString();
 	}
+	
+	public static String encodeURL(String decodeString) {
+		StringBuilder encodedString = null;
+		
+		if(decodeString != null) {
+			encodedString = new StringBuilder();
+			for(int charIndex=0; charIndex < decodeString.length(); charIndex++) {
+				char currentChar = decodeString.charAt(charIndex);
+					if(EncodeMap.containsKey(currentChar)) {
+						encodedString.append(EncodeMap.get(currentChar));
+					}
+			}
+		}
+		
+		return encodedString==null?null:encodedString.toString();
+	}
 }
