@@ -94,8 +94,17 @@ public class URLUtils {
 	 * @throws IOException
 	 */
 	public static void DownloadStream(InputStream inputStream, String outputFile) throws IOException {
-		OutputStream outputStream = new FileOutputStream(outputFile);
-		DownloadStream(inputStream, outputStream);
+		File outputFileObj = new File(outputFile);
+		boolean appendStreamData = false;
+		long skipLength = 0;
+		if(outputFileObj.exists()) {
+			appendStreamData = true;
+			skipLength = outputFileObj.length();
+		}
+		OutputStream outputStream = new FileOutputStream(outputFile, appendStreamData);
+		if(inputStream.skip(skipLength) == skipLength) {
+			DownloadStream(inputStream, outputStream);
+		}
 		outputStream.flush();
 		outputStream.close();
 	}
@@ -164,20 +173,10 @@ public class URLUtils {
 		Logger.debug("Skip length: "+ skip + " Actual skip: " + actualSkip);
 		if(actualSkip == skip) {
 			Logger.debug("Skip length: "+ skip + " Actual skip: " + actualSkip);
-			
-			
-			File currentFileObj = new File(outputFileName);
-			File newFName = new File(outputFileName+"_temp");
-			
-			currentFileObj.renameTo(newFName);
-			
-			OutputStream os = new FileOutputStream(outputFileName);
-			DownloadStream(new FileInputStream(outputFileName+"_temp"), os);
+			OutputStream os = new FileOutputStream(outputFileName, true);
 			DownloadStream(inputStream, os);
 			os.flush();
 			os.close();
-			
-			new File(outputFileName+"_temp").delete();
 		}
 		else {
 			Logger.debug("Skip length: "+ skip + " Actual skip: " + actualSkip);

@@ -65,17 +65,17 @@ public class Main {
 					InputStream videoStream = URLUtils.OpenURL(downloadURL);
 					String outputFileName = videoObj.getTitle()+"_"+videosToDownload.get(vid)+".mp4";
 					Logger.debug("Downloading..");
-					File f = new File(outputFileName);
-					if(f.exists()) {
-						Logger.debug("Append");
-						long currentFileSize = f.length();
-						URLUtils.AppendStream(videoStream, outputFileName, currentFileSize);
-					}
-					else {
-						Logger.debug("Create");
+//					File f = new File(outputFileName);
+//					if(f.exists()) {
+//						Logger.debug("Append");
+//						long currentFileSize = f.length();
+//						URLUtils.AppendStream(videoStream, outputFileName, currentFileSize);
+//					}
+//					else {
+//						Logger.debug("Create");
 						URLUtils.DownloadStream(videoStream, outputFileName);
 						videoStream.close();
-					}
+//					}
 					Logger.debug("Downloaded");					
 				}
 			}
