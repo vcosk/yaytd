@@ -4,3 +4,9 @@
 #*.jar
 #*.war
 #*.ear
+
+# Downloaded files
+*.mp4
+*.flv
+*.webm
+*.3gp
