@@ -29,7 +29,7 @@ import java.util.Map;
 
 public class InputFileReader {
 
-	public static void ReadInputFile(String inputFile) throws Exception {
+	public static Map<String, VideoQuality> ReadInputFile(String inputFile) throws Exception {
 		if(inputFile == null) {
 			inputFile = "videos.csv";
 		}
@@ -57,5 +57,8 @@ public class InputFileReader {
 				}
 			}
 		}
+		br.close();
+		
+		return videoMap;
 	}
 }

@@ -31,7 +31,7 @@ public class VideoObj {
 	private String URL;
 	private String ObjectID;
 	private VideoQuality VideoQuality;
-	private String RequestedQuality;
+	private VideoQuality RequestedQuality;
 	private List<VideoQuality> availableQualityMP4 = new ArrayList<VideoQuality>();
 	private List<VideoQuality> availableQualityFLV = new ArrayList<VideoQuality>();
 	private String Title;
@@ -83,11 +83,11 @@ public class VideoObj {
 		VideoQuality = videoQuality;
 	}
 
-	public String getRequestedQuality() {
+	public VideoQuality getRequestedQuality() {
 		return RequestedQuality;
 	}
 
-	public void setRequestedQuality(String requestedQuality) {
+	public void setRequestedQuality(VideoQuality requestedQuality) {
 		RequestedQuality = requestedQuality;
 	}
 

@@ -33,10 +33,8 @@ public class VideoInfoParser {
 	
 	private static AppLogger Logger = AppLogger.getLogger(VideoInfoParser.class);
 	
-	public static VideoObj parseInfoFile(String infoDataString, String videoType, String quality) throws UnsupportedEncodingException {
+	public static VideoObj parseInfoFile(String infoDataString) throws UnsupportedEncodingException {
 		VideoObj videoObj = new VideoObj();
-		videoObj.setRequestedQuality(quality);
-		videoObj.setFormat(videoType);
 		
 		String[] infoDataArray = infoDataString.split(AppConstants.PARAMS_SEPARATOR);
 		boolean error = false;;
@@ -102,7 +100,7 @@ public class VideoInfoParser {
 		for(String urlP : urlArrays) {
 			//String url = URLEncodeDecode.decodeURL(urlP);
 			String url = URLDecoder.decode(urlP,"UTF-8");
-			url = url.replaceFirst(AppConstants.URL_PARAM, "").replaceAll("\\+", "%20").replace("&sig=", "&signature=");
+			url = url.replaceFirst(AppConstants.URL_PARAM, "").replaceAll("\\+", "%20").replaceAll(" ", "%20").replaceAll("\"", "%22").replaceAll(";", "%3B").replaceAll(",", "%2C").replace("&sig=", "&signature=");
 			
 			if(url.contains(AppConstants.MP4_VIDEO)) {
 				if(url.contains(AppConstants.VIDEO_1080)) {

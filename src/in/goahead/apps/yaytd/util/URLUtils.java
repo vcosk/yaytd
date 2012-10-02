@@ -20,15 +20,28 @@
 
 package in.goahead.apps.yaytd.util;
 
+import in.goahead.apps.yaytd.log.AppLogger;
+
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.logging.Logger;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 /**
  * Class contains utility methods wrt., URL and corresponding stream handling.
@@ -36,6 +49,8 @@ import java.net.URLConnection;
  *
  */
 public class URLUtils {
+	
+	private static AppLogger Logger = AppLogger.getLogger(URLUtils.class);
 	
 	/**
 	 * Method converts a given input stream to a string.
@@ -81,6 +96,8 @@ public class URLUtils {
 	public static void DownloadStream(InputStream inputStream, String outputFile) throws IOException {
 		OutputStream outputStream = new FileOutputStream(outputFile);
 		DownloadStream(inputStream, outputStream);
+		outputStream.flush();
+		outputStream.close();
 	}
 	
 	/**
@@ -95,19 +112,30 @@ public class URLUtils {
 	}
 	
 	public static InputStream OpenURL(String url) throws MalformedURLException, IOException {
-		InputStream is = null;
+//		InputStream is = null;
+//		
+//		Proxy proxy = getProxy();
+//		
+//		URL urlObj = new URL(url);
+//		URLConnection connection = null;
+//		if(proxy == null) {
+//			connection = urlObj.openConnection();
+//		}
+//		else {
+//			connection = urlObj.openConnection(proxy);
+//		}
+//		is = connection.getInputStream();		
+//		return is;
 		
-		Proxy proxy = getProxy();
+		InputStream is = null; 
+		HttpClient httpClient = new DefaultHttpClient();
+		HttpGet httpGet = new HttpGet(url);
+		HttpResponse httpResponse = httpClient.execute(httpGet);
+		HttpEntity httpEntity = httpResponse.getEntity();
+		if(httpEntity != null) {
+			is = httpEntity.getContent();
+		}
 		
-		URL urlObj = new URL(url);
-		URLConnection connection = null;
-		if(proxy == null) {
-			connection = urlObj.openConnection();
-		}
-		else {
-			connection = urlObj.openConnection(proxy);
-		}
-		is = connection.getInputStream();		
 		return is;
 	}
 	
@@ -127,5 +155,33 @@ public class URLUtils {
 		}
 		
 		return proxy;
+	}
+	
+	public static void AppendStream(InputStream inputStream, String outputFileName, long skip) throws IOException {
+		long actualSkip = 0;
+		Logger.debug("Skip length: "+ skip + " Actual skip: " + actualSkip);
+		actualSkip = inputStream.skip(skip);
+		Logger.debug("Skip length: "+ skip + " Actual skip: " + actualSkip);
+		if(actualSkip == skip) {
+			Logger.debug("Skip length: "+ skip + " Actual skip: " + actualSkip);
+			
+			
+			File currentFileObj = new File(outputFileName);
+			File newFName = new File(outputFileName+"_temp");
+			
+			currentFileObj.renameTo(newFName);
+			
+			OutputStream os = new FileOutputStream(outputFileName);
+			DownloadStream(new FileInputStream(outputFileName+"_temp"), os);
+			DownloadStream(inputStream, os);
+			os.flush();
+			os.close();
+			
+			new File(outputFileName+"_temp").delete();
+		}
+		else {
+			Logger.debug("Skip length: "+ skip + " Actual skip: " + actualSkip);
+		}
+		
 	}
 }
