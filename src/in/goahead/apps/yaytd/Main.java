@@ -42,8 +42,6 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		try {
-			//java.io.FileInputStream f = new java.io.FileInputStream("D:/Work/yaytd/get_video_info_1080");
-			//Logger.debug(VideoInfoParser.parseInfoFile(URLUtils.InputStreamToString(f), "MP4","H"));
 			Map<String, VideoQuality> videosToDownload = InputFileReader.ReadInputFile(null);
 			for(String vid : videosToDownload.keySet()) {
 				String videoInfo = URLUtils.InputStreamToString(URLUtils.OpenURL(AppConstants.YOUTUBE_VIDEO_INFO_URL + vid));
@@ -52,30 +50,27 @@ public class Main {
 				String downloadURL = videoObj.getLinkMP4(quality);
 				Logger.debug(videoObj);
 				if(downloadURL == null) {
-					downloadURL = videoObj.getLinkMP4(VideoQuality.FHD);
+					downloadURL = videoObj.getLinkMP4(VideoQuality.HD);
+					if(downloadURL == null) {
+						downloadURL = videoObj.getLinkMP4(VideoQuality.FHD);
+						if(downloadURL == null) {
+							downloadURL = videoObj.getLinkMP4(VideoQuality.MEDIUM);
+						}
+					}
 				}
-				//				Logger.debug(videoObj);
-				//				Logger.debug(downloadURL);
-				//				Logger.debug(URLDecoder.decode(videoObj.getTitle(), "UTF-8")+"_"+videosToDownload.get(vid));
-				//				InputStream videoStream = URLUtils.OpenURL(downloadURL);				
-				//				URLUtils.DownloadStream(videoStream, videoObj.getTitle()+"_"+videosToDownload.get(vid));				
-				//				videoStream.close();
-
+				
 				if(downloadURL != null) {
-					InputStream videoStream = URLUtils.OpenURL(downloadURL);
 					String outputFileName = videoObj.getTitle()+"_"+videosToDownload.get(vid)+".mp4";
+					File f = new File(outputFileName);
+					long skipBytes = 0;
+					if(f.exists()) {
+						skipBytes = f.length();
+					}
+					Logger.debug("skipBytes: "+ skipBytes);
+					InputStream videoStream = URLUtils.OpenURL(downloadURL, skipBytes);
 					Logger.debug("Downloading..");
-//					File f = new File(outputFileName);
-//					if(f.exists()) {
-//						Logger.debug("Append");
-//						long currentFileSize = f.length();
-//						URLUtils.AppendStream(videoStream, outputFileName, currentFileSize);
-//					}
-//					else {
-//						Logger.debug("Create");
-						URLUtils.DownloadStream(videoStream, outputFileName);
-						videoStream.close();
-//					}
+					URLUtils.DownloadStream(videoStream, outputFileName, skipBytes);
+					videoStream.close();
 					Logger.debug("Downloaded");					
 				}
 			}

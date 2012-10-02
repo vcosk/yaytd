@@ -94,17 +94,19 @@ public class URLUtils {
 	 * @throws IOException
 	 */
 	public static void DownloadStream(InputStream inputStream, String outputFile) throws IOException {
+		DownloadStream(inputStream, outputFile, 0);
+	}
+	public static void DownloadStream(InputStream inputStream, String outputFile, long skipLength) throws IOException {
 		File outputFileObj = new File(outputFile);
 		boolean appendStreamData = false;
-		long skipLength = 0;
-		if(outputFileObj.exists()) {
+		if(skipLength > 0) {
 			appendStreamData = true;
 			skipLength = outputFileObj.length();
 		}
 		OutputStream outputStream = new FileOutputStream(outputFile, appendStreamData);
-		if(inputStream.skip(skipLength) == skipLength) {
+	//	if(inputStream.skip(skipLength) == skipLength) {
 			DownloadStream(inputStream, outputStream);
-		}
+	//	}
 		outputStream.flush();
 		outputStream.close();
 	}
@@ -121,24 +123,16 @@ public class URLUtils {
 	}
 	
 	public static InputStream OpenURL(String url) throws MalformedURLException, IOException {
-//		InputStream is = null;
-//		
-//		Proxy proxy = getProxy();
-//		
-//		URL urlObj = new URL(url);
-//		URLConnection connection = null;
-//		if(proxy == null) {
-//			connection = urlObj.openConnection();
-//		}
-//		else {
-//			connection = urlObj.openConnection(proxy);
-//		}
-//		is = connection.getInputStream();		
-//		return is;
-		
+		return OpenURL(url, 0);
+	}
+	public static InputStream OpenURL(String url, long skipLength) throws MalformedURLException, IOException {
 		InputStream is = null; 
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpGet httpGet = new HttpGet(url);
+		
+		if(skipLength > 0) {
+			httpGet.setHeader("Range", "bytes="+skipLength+"-");
+		}
 		HttpResponse httpResponse = httpClient.execute(httpGet);
 		HttpEntity httpEntity = httpResponse.getEntity();
 		if(httpEntity != null) {
