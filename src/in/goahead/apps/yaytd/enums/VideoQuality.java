@@ -25,6 +25,7 @@ public enum VideoQuality {
 
 	public static VideoQuality ValueOf(String q) {
 		VideoQuality v = HD;
+		q = q.trim();
 		if(q != null) {
 			if(q.equalsIgnoreCase("F")) {
 				v = FHD;

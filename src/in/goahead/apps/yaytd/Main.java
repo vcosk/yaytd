@@ -21,11 +21,12 @@
 package in.goahead.apps.yaytd;
 
 import in.goahead.apps.yaytd.enums.VideoQuality;
-import in.goahead.apps.yaytd.log.AppLogger;
 import in.goahead.apps.yaytd.util.AppConstants;
+import in.goahead.apps.yaytd.util.ApplicationUtil;
 import in.goahead.apps.yaytd.util.InputFileReader;
 import in.goahead.apps.yaytd.util.URLUtils;
 import in.goahead.apps.yaytd.util.VideoInfoParser;
+import in.goahead.apps.yaytd.log.AppLogger;
 
 import java.io.File;
 import java.io.InputStream;
@@ -42,36 +43,40 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		try {
-			Map<String, VideoQuality> videosToDownload = InputFileReader.ReadInputFile(null);
-			for(String vid : videosToDownload.keySet()) {
-				String videoInfo = URLUtils.InputStreamToString(URLUtils.OpenURL(AppConstants.YOUTUBE_VIDEO_INFO_URL + vid));
-				VideoObj videoObj = VideoInfoParser.parseInfoFile(videoInfo);
-				VideoQuality quality = videosToDownload.get(vid);
-				String downloadURL = videoObj.getLinkMP4(quality);
-				Logger.debug(videoObj);
-				if(downloadURL == null) {
-					downloadURL = videoObj.getLinkMP4(VideoQuality.HD);
+			int filesToRead = args.length==0?1:args.length;
+			boolean defaultFile = args.length==0;
+			while(filesToRead-->0) {
+				Map<String, VideoQuality> videosToDownload = InputFileReader.ReadInputFile(defaultFile?null:args[filesToRead]);
+				for(String vid : videosToDownload.keySet()) {
+					String videoInfo = URLUtils.InputStreamToString(URLUtils.OpenURL(AppConstants.YOUTUBE_VIDEO_INFO_URL + vid));
+					VideoObj videoObj = VideoInfoParser.parseInfoFile(videoInfo);
+					VideoQuality quality = videosToDownload.get(vid);
+					String downloadURL = videoObj.getLinkMP4(quality);
+					Logger.debug(videoObj);
 					if(downloadURL == null) {
-						downloadURL = videoObj.getLinkMP4(VideoQuality.FHD);
+						downloadURL = videoObj.getLinkMP4(VideoQuality.HD);
 						if(downloadURL == null) {
-							downloadURL = videoObj.getLinkMP4(VideoQuality.MEDIUM);
+							downloadURL = videoObj.getLinkMP4(VideoQuality.FHD);
+							if(downloadURL == null) {
+								downloadURL = videoObj.getLinkMP4(VideoQuality.MEDIUM);
+							}
 						}
 					}
-				}
-				
-				if(downloadURL != null) {
-					String outputFileName = videoObj.getTitle()+"_"+videosToDownload.get(vid)+".mp4";
-					File f = new File(outputFileName);
-					long skipBytes = 0;
-					if(f.exists()) {
-						skipBytes = f.length();
+
+					if(downloadURL != null) {
+						String outputFileName = ApplicationUtil.createValidFileName(videoObj.getTitle()+"_"+videosToDownload.get(vid)+".mp4");
+						File f = new File(outputFileName);
+						long skipBytes = 0;
+						if(f.exists()) {
+							skipBytes = f.length();
+						}
+						Logger.debug("skipBytes: "+ skipBytes);
+						InputStream videoStream = URLUtils.OpenURL(downloadURL, skipBytes);
+						Logger.debug("Downloading..");
+						URLUtils.DownloadStream(videoStream, outputFileName, skipBytes);
+						videoStream.close();
+						Logger.debug("Downloaded");					
 					}
-					Logger.debug("skipBytes: "+ skipBytes);
-					InputStream videoStream = URLUtils.OpenURL(downloadURL, skipBytes);
-					Logger.debug("Downloading..");
-					URLUtils.DownloadStream(videoStream, outputFileName, skipBytes);
-					videoStream.close();
-					Logger.debug("Downloaded");					
 				}
 			}
 		}

@@ -26,8 +26,8 @@ import java.util.Set;
 import in.goahead.apps.yaytd.VideoObj;
 import in.goahead.apps.yaytd.enums.Params;
 import in.goahead.apps.yaytd.enums.VideoQuality;
-import in.goahead.apps.yaytd.log.AppLogger;
 import in.goahead.apps.yaytd.util.AppConstants;
+import in.goahead.apps.yaytd.log.AppLogger;
 
 public class VideoInfoParser {
 	

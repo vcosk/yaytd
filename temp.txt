@@ -1,0 +1,3 @@
+To List all the video link in debug bar from a playlist
+=======================================================
+console.clear();var a = document.getElementsByClassName("tile-link-block video-tile yt-uix-sessionlink");for(var i=0; i<a.length;i++){console.log(a[i].href+",F");};
