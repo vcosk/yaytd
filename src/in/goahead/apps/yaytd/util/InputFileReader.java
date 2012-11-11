@@ -25,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class InputFileReader {
@@ -34,7 +35,7 @@ public class InputFileReader {
 			inputFile = "videos.csv";
 		}
 
-		Map<String, VideoQuality> videoMap = new HashMap<String, VideoQuality>();
+		Map<String, VideoQuality> videoMap = new LinkedHashMap<String, VideoQuality>();
 		BufferedReader br = new BufferedReader(new FileReader(inputFile));
 		String fileData = null;
 		while((fileData = br.readLine()) != null) {
